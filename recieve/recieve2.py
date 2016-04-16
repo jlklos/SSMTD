@@ -68,9 +68,13 @@ def remake(parts):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='A quick and dirty Mutli-Path TCP using remort ports')
-    parser.add_argument('fileToRec', metavar='F', type=str, help='The file to receive from sender')
-    parser.add_argument('-b', dest='chunk', type=int, default=4096, help='The size of the blocks that have been split')
-    parser.add_argument('-p', dest='port', type=int, default=5185, help='Change the default communication port')
+    """
+    Creates passable arguments to set the file to send, block size, and port number to listen on.  Default block size is 4096,
+    and default port number is 5185.  The only argument a user must always specify is the file name.
+    """
+    parser = argparse.ArgumentParser(description='Multipath TCP Proof-of-Concept implementation using multihomed Linux distros.')
+    parser.add_argument('fileToRec', metavar='F', type=str, help='The file to receive from sender.')
+    parser.add_argument('-b', dest='chunk', type=int, default=4096, help='The size of the blocks that have been split.')
+    parser.add_argument('-p', dest='port', type=int, default=5185, help='Change the default communication port.')
     args = parser.parse_args()
     main()
