@@ -81,6 +81,7 @@ class send:
 
         j = 0
         for i in self.ifaces:  						     		    # create a socket for each available network adapter and connects them to recieve node
+          if 'down' not in os.system('cat /sys/class/net/' +str(i) + '/operstate'):
             try:
                 self.socketsList.append(socket.socket(socket.AF_INET, socket.SOCK_STREAM))  # create client socket
             except socket.error, msg:
