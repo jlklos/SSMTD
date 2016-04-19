@@ -81,22 +81,32 @@ class send:
 
         j = 0
         for i in self.ifaces:  						     		    # create a socket for each available network adapter and connects them to recieve node
-            try:
-                self.socketsList.append(socket.socket(socket.AF_INET, socket.SOCK_STREAM))  # create client socket
-            except socket.error, msg:
-                print("Failed to create socket. Error code: " + str(msg[0]) + " , Error message: " + msg[1])
-                sys.exit()
 
-            binder = netifaces.ifaddresses(i)[2][0]['addr']  				    # find ip address of network adapter
-            self.socketsList[j].bind((binder, 0))  					    # bind socket to network adapter
-            try:
-                self.socketsList[j].connect((self.ipAddr, self.port))  			    # connects each socket to recieve node
-            except socket.error:
-                print("Could not connect to the destination node")
-                sys.exit()
+             networkFile = open('/sys/class/net/'+str(i)+'/operstate', 'r')           # checks if an interface is active
+             ethStat = networkFile.read(2)
 
-            print("Socket %d successfully connected!" % j)
-            j = j + 1
+             if ethStat == 'up':
+                try:
+                      self.socketsList.append(socket.socket(socket.AF_INET, socket.SOCK_STREAM))  # create client socket
+                except socket.error, msg:
+                      print("Failed to create socket. Error code: " + str(msg[0]) + " , Error message: " + msg[1])
+                      sys.exit()
+
+                binder = netifaces.ifaddresses(i)[2][0]['addr']                              # find ip address of network adapter
+                self.socketsList[j].bind((binder, 0))                                        # bind socket to network adapter
+ 
+                try:
+                     self.socketsList[j].connect((self.ipAddr, self.port))                   # connects each socket to recieve node
+                except socket.error:
+                     print("Could not connect to the destination node")
+                     sys.exit()
+
+                print("Socket %d successfully connected!" % j)
+
+                j = j + 1
+
+             networkFile.close()
+             ethStat = '\0'        # clear ethStat variable
 
     def sendData(self):
 
