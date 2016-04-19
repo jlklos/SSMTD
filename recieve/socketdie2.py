@@ -17,14 +17,17 @@ import sys
 import socket
 
 parts = []
+finish = []
 
 class ClientThread(threading.Thread):
 
-    def __init__(self, clientsock, chunksize):
+    def __init__(self, clientsock, chunksize, idx):
         threading.Thread.__init__(self)
         self.clientsock = clientsock
         global parts
+        global finish
         self.chunksize = chunksize
+        self.idx = idx
 
     def run(self):
         # get address of machine connecting to the HOST
@@ -33,46 +36,63 @@ class ClientThread(threading.Thread):
         while l:
             print "Receiving messages"
             parts.append(l)
+            print l
+            #l = None 
             l = self.clientsock.recv(self.chunksize)
             if not l: break
             # recieve chunks and save them in parts        
+
+        finish[self.idx] = 1 #indicate that the thread is finished recieving
 
 # receive program
 class listener():
     def __init__(self, port, chunksize):
         self.chunksize = chunksize
         global parts
+        global finish
         self.threads = []
         self.port = port
+        self.threadNum = 0
 
     def listening(self): 
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             # setting up the socket for the listener
-            print 'Listener socket created'
+            print 'Listener socket created, Hit Me!!!!!'
             s.bind(('0.0.0.0', self.port))
             # bind to the port and listen for a computer to connect
         except socket.error as msg:
             print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
             sys.exit()
 
-        while True:
+        T = True
+        while T != False:
             # start listening on socket port
             s.listen(5)
             print 'Socket now listening'        
             (clientsock, (addr, self.port)) = s.accept()
             print addr
-            thread = ClientThread( clientsock, self.chunksize )
+            
+            thread = ClientThread( clientsock, self.chunksize, self.threadNum )
+            finish.append(0)
+            self.threadNum = self.threadNum + 1
             thread.start()
             self.threads.append(thread)
+
+            for i in finish:
+                if i == 0:
+                    T = True
+                    break
+                else:
+                    T = False
 
         for j in self.threads:
             j.join()
 
 
         print "Done Receiving chunks"
-        conn.close()
+        #conn.close()
         # close connection with client
         s.shutdown(socket.SHUT_RDWR)
         s.close()
@@ -109,7 +129,7 @@ def main():
     """
     parts = listener(args.port, args.chunk)
     parts.listening()
-    reass = reassemble(parts.parts, args.filetoRec)
+    reass = reassemble(args.fileToRec)
     reass.remake()
 
 
