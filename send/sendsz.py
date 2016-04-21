@@ -124,6 +124,8 @@ class send:
                 print("An error occured during sending the file. Quitting program...")
                 sys.exit()
             j = j + 1 % mod  			# used to select a socket to send data
+	self.socketsList[0].sendall('\n');
+	self.socketsList[1].sendall('\n');
 
         print("File sent successfully!")
 
