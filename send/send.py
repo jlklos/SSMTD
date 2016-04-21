@@ -39,8 +39,6 @@ class splitFile:
         for filePart in iter(lambda: self.fp.read(self.block), ''):
             self.stor.append(filePart + '\0' + str(self.count))  # append null byte
             self.count += 1
-        f_ext = "\0" + self.f_extension                          # create string with null byte and file extension
-        self.stor[self.count-1] += f_ext                         # append file extension to last file
         self.fp.close()
 
 
@@ -82,7 +80,7 @@ class send:
         j = 0
         for i in self.ifaces:  						     		    # create a socket for each available network adapter and connects them to recieve node
 
-             networkFile = open('/sys/class/net/'+str(i)+'/operstate', 'r')           # checks if an interface is active
+             networkFile = open('/sys/class/net/'+str(i)+'/operstate', 'r')                 # checks if an interface is active
              ethStat = networkFile.read(2)
 
              if ethStat == 'up':
@@ -106,7 +104,6 @@ class send:
                 j = j + 1
 
              networkFile.close()
-#             ethStat = '\0'        # clear ethStat variable
 
     def sendData(self):
 
@@ -124,6 +121,13 @@ class send:
                 print("An error occured during sending the file. Quitting program...")
                 sys.exit()
             j = j + 1 % mod  			# used to select a socket to send data
+
+        for i in range(len(self.socketsList)):  # indicates to the reciever we are finished sending
+            try:
+                self.socketsList[i].sendall('\0')
+            except socket.error:
+                print("An error occured while trying to finish sending the file. Quitting program...")
+                sys.exit()
 
         print("File sent successfully!")
 
