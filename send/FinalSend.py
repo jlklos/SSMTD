@@ -62,7 +62,7 @@ class send:
         Program will use each socket to send file segments across different network pathes.
         """
 
-        self.ifaces = [elem for elem in self.ifaces if elem[0:3] == "eth"] # parses interface list for network adapters
+        self.ifaces = [elem for elem in self.ifaces if elem[0:3] == "eth" or elem[0:4] == "wlan"] # parses interface list for network adapters
 
         if len(self.ifaces) == 0:		   # if there are no available network adapters on host, exit program
             print("No network interfaces available to send traffic. Exiting program...... ")
