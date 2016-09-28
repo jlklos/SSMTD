@@ -118,7 +118,7 @@ class send:
         for i in self.stor:  			# sends the file segments partially through each of the network adapters
             try:
 				print(self.socketsList[j])
-                self.socketsList[j].sendall(i)  # sends the entire string segment of the file out a random interface
+				self.socketsList[j].sendall(i)  # sends the entire string segment of the file out a random interface
             except socket.error:  		# error checking
                 print("An error occured during sending the file. Quitting program...")
                 sys.exit()
