@@ -117,6 +117,7 @@ class send:
 
         for i in self.stor:  			# sends the file segments partially through each of the network adapters
             try:
+		print("self")
                 self.socketsList[j].sendall(i)  # sends the entire string segment of the file out a random interface
             except socket.error:  		# error checking
                 print("An error occured during sending the file. Quitting program...")
@@ -146,7 +147,7 @@ def main():
 
 if __name__ == '__main__':
     """
-    Creates passable arguments to set the file to send, ip address of the destination, block size to split the file chunks,
+    Creates passable arguments to set the file to send, ip address of the destination, block size to split the file chunks, 
     and port number of the destination host is listening on. The file to send and ip address are the only arguments that
     are required, while the block size and port number are optional arguments. The defaults for the block size is 4096 bytes
     and the default port number is 5185.
