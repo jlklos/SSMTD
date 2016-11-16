@@ -48,12 +48,12 @@ class splitFile:
 
 class First_Sock:
 
-    def __init__(self, ipAddr, port, block):
+    def __init__(self, ipAddr, block):
 	self.ipAddr = ipAddr	# IP Address
-	self.port = 7789	# port
 	self.block = block
 
     def sock(self): 			# generate size that we predict are sending at
+	port = 7789
 	size = self.block 		# getting chunk size
         string = "a"*size		# create string of a's as long as size
         base = base64.b64encode(string)	# encode so we can predict size
@@ -63,7 +63,7 @@ class First_Sock:
 
 	sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	try:
-		sock.connect((self.ipAddr, self.port))
+		sock.connect((self.ipAddr, port))
 		sock.send(strbase)		# send size predicted len
 		sock.shutdown(socket.SHUT_RDWR)
                 sock.close()
@@ -74,13 +74,14 @@ class First_Sock:
 class send:
     'A class to send the file chunks over multiple network interfaces (LINUX ONLY)'
 
-    def __init__(self, stor, ipAddr, port, block):
+    def __init__(self, stor, ipAddr, port, block, filetosend):
         self.stor = stor                        # stores all file segments
         self.socketsList = []  			# creates an empty list to hold each socket created
         self.ifaces = netifaces.interfaces()    # gathers a list of available network interfaces on local host
 	self.ipAddr = ipAddr                    # pulls IP Address input
        	self.port = port                        # pulls in port number from input
 	self.block = block			# size of the data we plan on sending
+	self.filetosend = filetosend
 
     def multiInterface(self):
         """
@@ -123,6 +124,7 @@ class send:
                 self.socketsList[j].bind((binder, 0))                                        # bind socket to network adapter
 
                 try:
+		    print "im here"
                     self.socketsList[j].connect((self.ipAddr, self.port))                    # connects each socket to recieve node
                 except socket.error:
                     print("Could not connect to the destination node")
@@ -138,23 +140,34 @@ class send:
         """
 	Sends each file segment through all of the available network interfaces
 	"""
+	fileinfo = os.stat('self.filetosend')
+	print fileinfo
+	base =  fileinfo.st_size / self.base
+	# length of file/ blocks
+	print base
+	strbase = str(base)
+	# make it a string and grab length
+	lenbase = len(strbase)
+	print lenbase
+	# prepend length amount of 0's to #
+	for i in self.stor:
+		try:
+			self.stor
+		        j = 0  					# used to iterativly select a socket to send data, starting at index 0
+        		mod = len(self.socketsList)  		# modulus to reset the j variable
+		except socket.error:
+			sys.exit()
 
-        j = 0  					# used to iterativly select a socket to send data, starting at index 0
-        mod = len(self.socketsList)  		# modulus to reset the j variable
+	for i in self.stor:				# sends the file segments partially through each of the network adapters
+        	try:
+			self.stor(i).rjust(lenbase, '0')
+			self.socketsList[j].sendall(i)  # sends the entire string segment of the file out a random interface
+			print(self.socketsList[j].sendall(i))
+        	except socket.error:  		# error checking
+                	print("An error occured during sending the file. Quitting program...")
+                	sys.exit()
 
-	print(self.socketList[j].sendall(i))
-
-        for i in self.stor:  			# sends the file segments partially through each of the network adapters
-            try:
-		self.socketsList[j].sendall(i)  # sends the entire string segment of the file out a random interface
-		print(self.socketList[j].sendall(i))
-            except socket.error:  		# error checking
-                print("An error occured during sending the file. Quitting program...")
-                sys.exit()
-            j = (j + 1) % mod  			# used to select a socket to send data
-
-	#print i
-
+        j = (j + 1) % mod  			# used to select a socket to send data
         print("File sent successfully!")
 
         for i in self.socketsList: 		# closes out all sockets
@@ -172,9 +185,9 @@ def main():
     """
     splitter = splitFile(args.fileToSend, args.b)
     splitter.split()
-    sends = First_Sock(args.ipAddr, args.port, args.b)
+    sends = First_Sock(args.ipAddr, args.b)
     sends.sock()
-    sender = send(splitter.stor, args.ipAddr, args.port, args.b)
+    sender = send(splitter.stor, args.ipAddr, args.port, args.b, args.filetosend)
     sender.multiInterface()
     sender.sendData()
 
