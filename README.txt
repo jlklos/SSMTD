@@ -6,4 +6,3 @@ Make code changes and test
 If adding or deleting files, make sure to include them in the next commit(git add *)
 Complete commit (git commit -m "Type a comment on the changes you made --<name>)
 Push that commit to the repo(git push)
-If the systems don't have internet, just reboot the Research Gateway vApp. Let me know if you have any questions!
