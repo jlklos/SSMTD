@@ -6,7 +6,7 @@ import threading
 app = Flask(__name__)
 
 #either other remote bouncers or the endpoint
-hosts = ['35.160.21.18:8888']
+hosts = ['35.162.184.231:8888']
 
 @app.route('/', methods=['POST'])
 def bounce():
