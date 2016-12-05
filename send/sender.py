@@ -19,7 +19,6 @@ def splitupFile(fileName, blockSize):
 	#determine where in the filewe are
 	offset=fp.tell()
 	for filePart in iter(lambda: fp.read(blockSize), ''):
-		print(offset)
 		#we base64 encode the filePart for transfer
 		filePart = base64.b64encode(filePart)
 		#here we calculate the offset that the client will need to write that part of the file at.
@@ -41,7 +40,7 @@ def main():
 		#here we get to the heart of the operation. the file is sent to the random host via POST encoded as a json blob
 		r = requests.post("http://%s" % randomHost, json=data)
 		#debug stuff don't worry about it
-		print("Part sent to %s" % (randomHost))
+		print("Offset %d sent to %s" % (offset, randomHost))
 		#we have covered this already
 	print("Sending finished")
 	randomHost = random.choice(remoteHosts)
