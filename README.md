@@ -1,6 +1,6 @@
-# Stream Splitting Demo
+# Stream Splitting Moving Target Defense Demo
 
-Our system relies on intermediate bouncer hosts to break up the stream between multiple routes.
+Our system relies on intermediate bouncer hosts to break up the stream between multiple routes. The research paper can be found [here](docs/SSMTD-Paper.pdf).
 
 ![Arch](images/arch.png)
 
