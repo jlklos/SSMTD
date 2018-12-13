@@ -39,6 +39,7 @@ def receive():
 	)
 	# start the thread
 	t.start()
+	# spit back a postitive result so the bouncer can go on its way.
 	return 'ok'
 
 def main():
